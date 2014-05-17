@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="toolshelf : a package installer which neither packages nor installs" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>toolshelf</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/catseye/toolshelf">View on GitHub</a>
+
+          <h1 id="project_title">toolshelf</h1>
+          <h2 id="project_tagline">a package installer which neither packages nor installs</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/catseye/toolshelf/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/catseye/toolshelf/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="toolshelf" class="anchor" href="#toolshelf"><span class="octicon octicon-link"></span></a>toolshelf</h1>
+
+<p>First, the metaphor:</p>
+
+<p>Certain bulky technologies in your home — such as your washing machine and your
+refrigerator (let's call them appliances) — deserve to be <em>installed</em>.  You're
+not going to move them much, and they might have to be hooked up to the water
+pipes and so forth.</p>
+
+<p>But certain other, lighter technologies — such as your can opener and your 
+broom and dustpan (let's call them tools) — aren't "installed" anywhere.
+Instead, you simply store them somewhere (say, on a shelf) until they're needed.</p>
+
+<p><code>toolshelf</code> applies this paradigm to software.  Because you should never need to
+<em>install</em> a can opener.</p>
+
+<p>If this metaphor piques your curiosity, you can read more about
+<a href="https://github.com/catseye/toolshelf/blob/master/doc/Philosophy.markdown">why <code>toolshelf</code> exists</a>.</p>
+
+<h2>
+<a name="description" class="anchor" href="#description"><span class="octicon octicon-link"></span></a>Description</h2>
+
+<p><code>toolshelf</code> is a "package manager" which doesn't actually install any files.
+Instead, it:</p>
+
+<ul>
+<li>  stores ("docks") the source distributions of projects in a directory tree
+(usually located in your home directory);</li>
+<li>  builds executables, libraries, etc. as needed in these source directories;</li>
+<li>  creates "link farms" of symlinks to these executables, libraries, etc.; and </li>
+<li>  manages your search paths to include these link farms.</li>
+</ul><p>The source distributions are typically version-controlled working directories
+(e.g. a local clone of a Git repository), but they can also be directory
+structures extracted from downloaded archives (so-called "tarballs" or
+"distfiles".)</p>
+
+<p><code>toolshelf</code> is a <strong>work in progress</strong>, currently <strong>version 0.1-PRE</strong>, and
+subject to change.  It is written in Python 2.7, with some supporting scripts
+in vanilla <code>sh</code>.  It also requires the presence of those tools it needs to use
+to get and build what it asks for.  Obviously, the less you ask for, the less it
+needs, but at least some of the following will be helpful:</p>
+
+<ul>
+<li>  <code>git</code> or <code>hg</code> (Mercurial)</li>
+<li>  <code>wget</code>
+</li>
+<li>  <code>tar</code> and <code>gzip</code> and/or <code>bzip2</code>
+</li>
+<li>  <code>unzip</code>
+</li>
+<li>  <code>make</code>
+</li>
+</ul><p>(It is also probably better if you use a POSIX <code>sh</code>-based shell, such as <code>bash</code>
+or <code>ash</code>, as your interactive shell; otherwise you may lack some functions
+such as <code>toolshelf_cd</code>.  I have not tested it with <code>csh</code>, <code>zsh</code>, etc.)</p>
+
+<p><code>toolshelf</code> is distributed under an MIT-style license.</p>
+
+<h2>
+<a name="quick-start" class="anchor" href="#quick-start"><span class="octicon octicon-link"></span></a>Quick Start</h2>
+
+<ul>
+<li><p>Start a shell.  (On some OS'es, this means "Open a Terminal window.")</p></li>
+<li>
+<p>Download <a href="https://raw.github.com/catseye/toolshelf/master/bootstrap-toolshelf.sh"><code>bootstrap-toolshelf.sh</code></a>, for example by running:</p>
+
+<pre><code>wget https://raw.github.com/catseye/toolshelf/master/bootstrap-toolshelf.sh
+</code></pre>
+
+<p>(If you don't have <code>wget</code> installed, <code>curl</code> should also work.  Or you can
+just download it from the link above with your web browser.)</p>
+</li>
+<li>
+<p>Run:</p>
+
+<pre><code>. ./bootstrap-toolshelf.sh
+</code></pre>
+</li>
+<li><p>Follow the instructions given to you by the script.</p></li>
+</ul><p>(If you don't want to use the bootstrap script, it's not very difficult to
+get toolshelf up and running manually; see below for instructions.)</p>
+
+<p>Now, you can dock any source that <code>toolshelf</code> can handle, simply by typing,
+for example,</p>
+
+<pre><code>toolshelf dock gh:nelhage/reptyr
+</code></pre>
+
+<p>When that completes, you can run <code>reptyr</code> by simply typing</p>
+
+<pre><code>reptyr
+</code></pre>
+
+<p>Convenient!  And if you want to <code>cd</code> to where the <code>reptyr</code> sources are, to
+hack on it or whatever, just</p>
+
+<pre><code>toolshelf_cd reptyr
+</code></pre>
+
+<p>And if you ever want to get rid of (almost) all trace of <code>reptyr</code> from your
+system, simply run</p>
+
+<pre><code>rm -rf $TOOLSHELF/nelhage/reptyr
+</code></pre>
+
+<p>(For removal to be completely complete, you'd also want to run
+<code>toolshelf relink all</code>, to remove the now-broken symbolic links to the
+executable(s) that were in <code>$TOOLSHELF/nelhage/reptyr</code>.)</p>
+
+<p>And, if you want to get rid of (almost) all trace of <code>toolshelf</code> and all of
+the packages you've docked using it, simply</p>
+
+<pre><code>rm -rf $TOOLSHELF
+</code></pre>
+
+<p>(For removal to be completely complete, you'd also want to remove the commands
+that <code>bootstrap-toolshelf.sh</code> added to your <code>.bashrc</code>.  But if your <code>$TOOLSHELF</code>
+directory doesn't exist, they won't run anyway.)</p>
+
+<p>If you want to know more, you can read more about
+<a href="https://github.com/catseye/toolshelf/blob/master/doc/Theory_of_Operation.markdown">how <code>toolshelf</code> works</a>.</p>
+
+<h2>
+<a name="manual-setup" class="anchor" href="#manual-setup"><span class="octicon octicon-link"></span></a>Manual Setup</h2>
+
+<ul>
+<li><p>Decide where you want your toolshelf sources to be kept.  I keep mine
+in a directory called <code>toolshelf</code> in my home directory.  In the following
+examples, I'll use <code>/home/user/toolshelf</code>.  It is strongly recommended
+that this pathname not contain any spaces or other characters which
+normally require escaping for the shell; even if <code>toolshelf</code> handles all
+these cases correctly, there's a fair chance any random source that you
+dock won't.</p></li>
+<li>
+<p>Make this directory:</p>
+
+<pre><code>mkdir -p /home/user/toolshelf
+</code></pre>
+</li>
+<li>
+<p>Clone the <code>toolshelf</code> repo into <code>.toolshelf</code> in it, perhaps like so:</p>
+
+<pre><code>git clone https://github.com/catseye/toolshelf /home/user/toolshelf/.toolshelf
+</code></pre>
+
+<p>If you prefer, you could use Mercurial and clone it from Bitbucket.
+Or get a zip of the <code>toolshelf</code> distribution, and unzip it to there.  Any
+of these options should be fine.</p>
+</li>
+<li>
+<p>Add the following line to your <code>.profile</code>, or <code>.bash_profile</code>, or
+<code>.bashrc</code>, or the startup script for whatever POSIX-compliant Bourne
+shell-alike you use:</p>
+
+<pre><code>export TOOLSHELF=/home/user/toolshelf/ &amp;&amp; . $TOOLSHELF/.toolshelf/init.sh
+</code></pre>
+</li>
+<li><p>Start a new shell and test that it works.</p></li>
+</ul><h2>
+<a name="related-work" class="anchor" href="#related-work"><span class="octicon octicon-link"></span></a>Related Work</h2>
+
+<ul>
+<li>  <a href="https://bitbucket.org/reinout/checkoutmanager">checkoutmanager</a>
+</li>
+<li>  <a href="http://gobolinux.org/">Gobolinux</a>
+</li>
+<li>  <a href="https://github.com/kristi/pathify">pathify</a>
+</li>
+<li>  <a href="https://github.com/trentm/sources">sources</a>
+</li>
+<li>  <a href="https://github.com/kristi/spackle">spackle</a>
+</li>
+<li>  <code>zero-install</code>/<code>0launch</code>
+</li>
+<li>  <code>pkgviews</code>
+</li>
+</ul>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">toolshelf maintained by <a href="https://github.com/catseye">catseye</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
